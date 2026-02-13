@@ -9,22 +9,22 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
+   <div class="container">
         <div class="header">
-            <h1>📊 CANVAS Management System</h1>
-            <p>Track items, manage inventory, and monitor your necessities</p>
+            <h1>📊 Workspace Management System</h1>
+            <p>Track items, manage inventory, and monitor your workspace efficiently</p>
         </div>
 
         <div class="controls">
             <div class="search-filter">
                 <input type="text" id="searchInput" placeholder="🔍 Search items..." 
-                       style="padding: 12px 16px; border: 1px solid #ced4da; border-radius: 8px; font-size: 14px; min-width: 300px;">
-                <select id="filterPaid" style="padding: 12px 16px; border: 1px solid #ced4da; border-radius: 8px; font-size: 14px; cursor: pointer;">
+                       style="padding: 10px 14px; border: 1px solid #ced4da; border-radius: 8px; font-size: 14px; min-width: 250px; max-width: 100%;">
+                <select id="filterPaid" style="padding: 10px 14px; border: 1px solid #ced4da; border-radius: 8px; font-size: 14px; cursor: pointer;">
                     <option value="all">All Items</option>
                     <option value="paid">Paid Only</option>
                     <option value="unpaid">Unpaid Only</option>
                 </select>
-                <select id="filterReceived" style="padding: 12px 16px; border: 1px solid #ced4da; border-radius: 8px; font-size: 14px; cursor: pointer;">
+                <select id="filterReceived" style="padding: 10px 14px; border: 1px solid #ced4da; border-radius: 8px; font-size: 14px; cursor: pointer;">
                     <option value="all">All Status</option>
                     <option value="received">Received</option>
                     <option value="not-received">Not Received</option>
@@ -53,6 +53,9 @@
                 </button>
                 <button class="btn btn-primary" onclick="openAddModal()">
                     ➕ Add New Item
+                </button>
+                <button class="btn btn-danger" onclick="deleteAllItems()">
+                    🗑️ Delete All
                 </button>
             </div>
         </div>
@@ -100,8 +103,8 @@
             </div>
             <form id="itemForm">
                 <div class="form-group">
-                    <label for="dateAdded">Date Added (MM/DD/YYYY)</label>
-                    <input type="text" id="dateAdded" placeholder="MM/DD/YYYY" required>
+                    <label for="dateAdded">Date Added (MM-DD-YYYY)</label>
+                    <input type="text" id="dateAdded" placeholder="MM-DD-YYYY" required>
                 </div>
                 <div class="form-group">
                     <label for="itemName">Item Name</label>
@@ -229,7 +232,6 @@
             </div>
         </div>
     </div>
-
 <script src="script.js"></script>
 </body>
 </html>

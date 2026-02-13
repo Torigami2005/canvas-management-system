@@ -1,4 +1,4 @@
-        let items = [];
+       let items = [];
         let editingIndex = -1;
         let currentItemImages = [];
         let viewerImages = [];
@@ -12,7 +12,49 @@
             dateAdded: {
                 label: 'Date Added',
                 variations: ['date', 'date added', 'added date', 'created', 'created date', 'purchase date', 'bought date'],
-                default: () => new Date().toISOString().split('T')[0]
+                default: () => {
+                    const today = new Date();
+                    const month = String(today.getMonth() + 1).padStart(2, '0');
+                    const day = String(today.getDate()).padStart(2, '0');
+                    const year = today.getFullYear();
+                    return `${month}-${day}-${year}`;
+                },
+                parser: (val) => {
+                    // Accept various date formats and convert to MM-DD-YYYY
+                    if (!val) return fieldDefinitions.dateAdded.default();
+                    
+                    const str = String(val).trim();
+                    
+                    // If already in MM-DD-YYYY format, return as is
+                    if (/^\d{1,2}-\d{1,2}-\d{4}$/.test(str)) {
+                        const parts = str.split('-');
+                        const month = parts[0].padStart(2, '0');
+                        const day = parts[1].padStart(2, '0');
+                        const year = parts[2];
+                        return `${month}-${day}-${year}`;
+                    }
+                    
+                    // If in MM/DD/YYYY format, convert to MM-DD-YYYY
+                    if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(str)) {
+                        const parts = str.split('/');
+                        const month = parts[0].padStart(2, '0');
+                        const day = parts[1].padStart(2, '0');
+                        const year = parts[2];
+                        return `${month}-${day}-${year}`;
+                    }
+                    
+                    // Try to parse as date (handles Excel date formats)
+                    const date = new Date(val);
+                    if (!isNaN(date.getTime())) {
+                        const month = String(date.getMonth() + 1).padStart(2, '0');
+                        const day = String(date.getDate()).padStart(2, '0');
+                        const year = date.getFullYear();
+                        return `${month}-${day}-${year}`;
+                    }
+                    
+                    // If can't parse, return default
+                    return fieldDefinitions.dateAdded.default();
+                }
             },
             itemName: {
                 label: 'Item Name',
@@ -99,7 +141,7 @@
             const month = String(today.getMonth() + 1).padStart(2, '0');
             const day = String(today.getDate()).padStart(2, '0');
             const year = today.getFullYear();
-            document.getElementById('dateAdded').value = `${month}/${day}/${year}`;
+            document.getElementById('dateAdded').value = `${month}-${day}-${year}`;
         }
 
         // Load items from localStorage
@@ -208,13 +250,20 @@
         document.getElementById('itemForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
+            // Validate date format
+            const dateValue = document.getElementById('dateAdded').value;
+            if (!/^\d{1,2}-\d{1,2}-\d{4}$/.test(dateValue)) {
+                alert('Please enter date in MM-DD-YYYY format');
+                return;
+            }
+            
             const quantity = parseInt(document.getElementById('quantity').value) || 1;
             const price = parseFloat(document.getElementById('price').value) || 0;
             const paid = document.getElementById('paid').checked;
             const received = document.getElementById('received').checked;
             
             const item = {
-                dateAdded: document.getElementById('dateAdded').value,
+                dateAdded: dateValue,
                 itemName: document.getElementById('itemName').value,
                 itemType: document.getElementById('itemType').value,
                 quantity: quantity,
@@ -242,12 +291,53 @@
             closeModal();
         });
 
+        // Add date input formatting helper
+        document.getElementById('dateAdded').addEventListener('blur', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+            
+            if (value.length >= 2) {
+                const month = value.substring(0, 2);
+                value = value.substring(2);
+                
+                if (value.length >= 2) {
+                    const day = value.substring(0, 2);
+                    value = value.substring(2);
+                    
+                    if (value.length >= 4) {
+                        const year = value.substring(0, 4);
+                        e.target.value = `${month}-${day}-${year}`;
+                    }
+                }
+            }
+        });
+
         // Delete item
         function deleteItem(index) {
             if (confirm('Are you sure you want to delete this item?')) {
                 items.splice(index, 1);
                 saveItems();
                 renderTable();
+            }
+        }
+
+        // Delete all items
+        function deleteAllItems() {
+            if (items.length === 0) {
+                alert('There are no items to delete.');
+                return;
+            }
+            
+            const confirmMessage = `⚠️ WARNING: This will permanently delete all ${items.length} items!\n\nThis action cannot be undone.\n\nAre you absolutely sure you want to delete everything?`;
+            
+            if (confirm(confirmMessage)) {
+                // Double confirmation for safety
+                const doubleConfirm = confirm('Final confirmation: Delete all items?');
+                if (doubleConfirm) {
+                    items = [];
+                    saveItems();
+                    renderTable();
+                    alert('✅ All items have been deleted.');
+                }
             }
         }
 
@@ -718,8 +808,8 @@
                         <td><span class="status-badge ${getStatusClass(item.status)}">${item.status}</span></td>
                         <td>${item.location}</td>
                         <td>${item.contactInfo}</td>
-                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.notes}">${item.notes}</td>
-                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${item.extra}">${item.extra}</td>
+                        <td>${item.notes}</td>
+                        <td>${item.extra}</td>
                         <td>
                             <div class="action-buttons">
                                 <button class="btn btn-primary btn-small" onclick="openEditModal(${originalIndex})">Edit</button>
