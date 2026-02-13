@@ -6,19 +6,25 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             margin: 0;
             padding: 0;
-            overflow: hidden;
+            overflow: auto;
         }
 
         .container {
-            width: 100%;
-            height: 100vh;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            background: white;
-            overflow: hidden;
+            height: calc(100vh - 40px);
+            margin-top: 20px;
+            margin-bottom: 20px;
         }
 
         .header {
@@ -642,6 +648,12 @@
         }
 
         @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                height: calc(100vh - 20px);
+                border-radius: 12px;
+            }
+
             .header h1 {
                 font-size: 22px;
             }
@@ -717,6 +729,12 @@
         }
 
         @media (max-width: 480px) {
+            .container {
+                margin: 5px;
+                height: calc(100vh - 10px);
+                border-radius: 8px;
+            }
+
             .stats {
                 flex-direction: column;
                 gap: 5px;
